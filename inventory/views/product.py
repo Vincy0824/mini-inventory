@@ -92,11 +92,8 @@ def product_list(request):
     status = request.GET.get('status', 'active')  # 默认显示活跃商品
     sort_by = request.GET.get('sort', 'updated')  # 修改默认排序为更新时间
     
-    print(f"DEBUG: 列表筛选参数 - 搜索: {search_query}, 分类: {category_id}, 状态: {status}, 排序: {sort_by}")
-    
     # 基本查询集
     products = Product.objects.select_related('category').all()
-    print(f"DEBUG: 初始查询集数量: {products.count()}")
     
     # 应用筛选
     if search_query:
@@ -112,7 +109,6 @@ def product_list(request):
     # 状态筛选
     if status == 'active':
         products = products.filter(is_active=True)
-        print(f"DEBUG: 应用活跃状态筛选后的数量: {products.count()}")
     elif status == 'inactive':
         products = products.filter(is_active=False)
     
@@ -141,8 +137,6 @@ def product_list(request):
     # 计算统计数据
     total_products = Product.objects.count()
     active_products = Product.objects.filter(is_active=True).count()
-    
-    print(f"DEBUG: 总商品数: {total_products}, 活跃商品数: {active_products}, 当前页面商品数: {len(page_obj)}")
     
     context = {
         'page_obj': page_obj,
