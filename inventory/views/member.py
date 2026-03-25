@@ -631,6 +631,27 @@ def member_recharge_records(request, pk):
         'recharge_records': recharge_records
     })
 
+@login_required
+def member_points_records(request, pk):
+    """会员积分明细记录视图"""
+    member = get_object_or_404(Member, pk=pk)
+    # 只查询有积分变动的交易记录
+    point_records = MemberTransaction.objects.filter(
+        member=member
+    ).exclude(
+        points_change=0
+    ).order_by('-created_at')
+    
+    # 分页
+    paginator = Paginator(point_records, 20)  # 每页20条记录
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'inventory/member/member_points_records.html', {
+        'member': member,
+        'page_obj': page_obj,
+    })
+
 
 @login_required
 def member_balance_adjust(request, pk):

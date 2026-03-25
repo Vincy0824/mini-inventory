@@ -433,6 +433,18 @@ def sale_create(request):
                         sale.member.purchase_count += 1
                         sale.member.total_spend += sale.final_amount
                         sale.member.save()
+                        
+                        # 记录积分变动
+                        if sale.points_earned > 0:
+                            MemberTransaction.objects.create(
+                                member=sale.member,
+                                transaction_type='PURCHASE',
+                                points_change=sale.points_earned,
+                                description=f"购买商品获得积分 (订单号: {sale.id})",
+                                created_by=request.user,
+                                related_object_id=sale.id,
+                                related_object_type='Sale'
+                            )
                     
                     # 记录完成销售操作日志
                     OperationLog.objects.create(
@@ -585,6 +597,18 @@ def sale_complete(request, sale_id):
                     member.purchase_count += 1
                     member.total_spend += sale.final_amount
                     member.save()
+                    
+                    # 记录积分变动
+                    if sale.points_earned > 0:
+                        MemberTransaction.objects.create(
+                            member=member,
+                            transaction_type='PURCHASE',
+                            points_change=sale.points_earned,
+                            description=f"购买商品获得积分 (订单号: {sale.id})",
+                            created_by=request.user,
+                            related_object_id=sale.id,
+                            related_object_type='Sale'
+                        )
                 except Member.DoesNotExist:
                     pass
             

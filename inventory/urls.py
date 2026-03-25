@@ -74,6 +74,7 @@ urlpatterns = [
     path('members/<int:pk>/delete/', member_views.member_delete, name='member_delete'),
     path('members/<int:pk>/recharge/', member_views.member_recharge, name='member_recharge'),
     path('members/<int:pk>/recharge-records/', member_views.member_recharge_records, name='member_recharge_records'),
+    path('members/<int:pk>/points-records/', member_views.member_points_records, name='member_points_records'),
     path('members/<int:pk>/points-adjust/', member_views.member_points_adjust, name='member_points_adjust'),
     path('members/<int:pk>/balance-adjust/', member_views.member_balance_adjust, name='member_balance_adjust'),
     path('members/import/', member_views.member_import, name='member_import'),
