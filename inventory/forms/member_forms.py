@@ -15,6 +15,13 @@ class MemberForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        # 限制生日最大可选日期为今天
+        from django.utils import timezone
+        today_str = timezone.now().date().strftime('%Y-%m-%d')
+        self.fields['birthday'].widget.attrs['max'] = today_str
+        self.fields['birthday'].help_text = '请勿选择未来的日期'
+        
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
@@ -40,6 +47,15 @@ class MemberForm(forms.ModelForm):
             Submit('submit', '保存', css_class='btn btn-primary')
         )
     
+    def clean_birthday(self):
+        """生日验证"""
+        birthday = self.cleaned_data.get('birthday')
+        if birthday:
+            from django.utils import timezone
+            if birthday > timezone.now().date():
+                raise forms.ValidationError('生日不能选择未来的日期')
+        return birthday
+        
     def clean_phone(self):
         """手机号验证"""
         phone = self.cleaned_data.get('phone')
