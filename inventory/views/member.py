@@ -209,6 +209,22 @@ def member_create(request):
             member.created_by = request.user
             member.save()
             
+            # [新增] 检查是否完整填写了地址、生日、性别和邮箱，若是则奖励200积分
+            if member.address and member.birthday and member.gender != 'O' and member.email:
+                member.points += 200
+                member.save(update_fields=['points'])
+                
+                from inventory.models import MemberTransaction
+                MemberTransaction.objects.create(
+                    member=member,
+                    transaction_type='POINTS_EARN',
+                    points_change=200,
+                    description='首次注册并完善基本资料奖励',
+                    created_by=request.user,
+                    related_object_id=member.id,
+                    related_object_type='Member'
+                )
+            
             messages.success(request, f'会员 {member.name} 创建成功')
             
             # 如果需要继续添加
