@@ -6,6 +6,14 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    # Force UTF-8 encoding on Windows to avoid cp932 UnicodeEncodeError
+    os.environ.setdefault('PYTHONUTF8', '1')
+    os.environ.setdefault('PYTHONIOENCODING', 'utf-8')
+    if sys.stdout.encoding != 'utf-8':
+        import io
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'inventory.settings')
     try:
         from django.core.management import execute_from_command_line
